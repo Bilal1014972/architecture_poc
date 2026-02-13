@@ -7,8 +7,9 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-OLLAMA_URL = os.getenv("OLLAMA_URL", "http://localhost:11434")
+OLLAMA_URL = os.getenv("OLLAMA_URL", "https://ollama.com")
 OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "llama3.2:3b")
+OLLAMA_API_KEY = os.getenv("OLLAMA_API_KEY")
 
 app = FastAPI(title="Recipe AI API")
 
@@ -39,11 +40,7 @@ async def ask(data: PromptInput):
         async with httpx.AsyncClient(timeout=120.0) as client:
             res = await client.post(
                 f"{OLLAMA_URL}/api/chat",
-                headers={
-                    "Content-Type": "application/json",
-                    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
-                    "Accept": "application/json",
-                },
+                headers={"Authorization": f"Bearer {OLLAMA_API_KEY}"},
                 json={
                     "model": OLLAMA_MODEL,
                     "messages": [{"role": "user", "content": data.prompt}],
